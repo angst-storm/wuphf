@@ -1,1 +1,9 @@
 .DS_Store
+ums/target/
+*.class
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.metals/
