@@ -1,0 +1,240 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "UMS — User Management Service",
+    "description": "UMS on http://localhost:9000.\nEnvelope { code, message, data }; HTTP status always 200.\n\nAuth: header X-Session-Id from POST /sessions/login.\nPublic: POST /users/user, POST /sessions/login.\n\nSeeded superadmin:\n  email: admin@wuphf.local\n  password: superadmin\n  role: ADMIN\n\nFlow: Login as superadmin → Create user (SUBSCRIBER/PRODUCER only) → Assign ADMIN if needed.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:9000" },
+    { "key": "userId", "value": "" },
+    { "key": "sessionId", "value": "" },
+    { "key": "adminEmail", "value": "admin@wuphf.local" },
+    { "key": "adminPassword", "value": "superadmin" },
+    { "key": "roleAdmin", "value": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" },
+    { "key": "roleProducer", "value": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
+    { "key": "roleSubscriber", "value": "cccccccc-cccc-cccc-cccc-cccccccccccc" }
+  ],
+  "item": [
+    {
+      "name": "Sessions",
+      "item": [
+        {
+          "name": "Login (superadmin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.sessionId) {",
+                  "  pm.collectionVariables.set('sessionId', body.data.sessionId);",
+                  "}",
+                  "if (body.data && body.data.userId) {",
+                  "  pm.collectionVariables.set('userId', body.data.userId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/sessions/login",
+            "description": "Public. Opens session for seeded superadmin. Saves sessionId and userId."
+          },
+          "response": []
+        },
+        {
+          "name": "Get last session",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "url": "{{baseUrl}}/sessions/user/{{userId}}/last",
+            "description": "Self or ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout (close session)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "url": "{{baseUrl}}/sessions/{{sessionId}}",
+            "description": "Self or ADMIN."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.id) {",
+                  "  pm.collectionVariables.set('userId', body.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Michael Scott\",\n  \"email\": \"michael@dundermifflin.com\",\n  \"password\": \"secret123\",\n  \"roles\": [\n    { \"role\": \"SUBSCRIBER\" },\n    { \"role\": \"PRODUCER\" }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/users/user",
+            "description": "Public registration. ADMIN role is forbidden here — only SUBSCRIBER / PRODUCER."
+          },
+          "response": []
+        },
+        {
+          "name": "List all users",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "url": "{{baseUrl}}/users",
+            "description": "ADMIN only."
+          },
+          "response": []
+        },
+        {
+          "name": "Get user by id",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "url": "{{baseUrl}}/users/user/{{userId}}",
+            "description": "Any authenticated user."
+          },
+          "response": []
+        },
+        {
+          "name": "Update user (full)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Michael G. Scott\",\n  \"email\": \"michael@dundermifflin.com\",\n  \"password\": \"secret123\",\n  \"roles\": [\n    { \"role\": \"ADMIN\" },\n    { \"role\": \"SUBSCRIBER\" }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/users/user/{{userId}}",
+            "description": "Self or ADMIN. roles[] only applied when actor is ADMIN; non-admin gets 403 if roles present."
+          },
+          "response": []
+        },
+        {
+          "name": "Patch user (partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Michael Scott\"\n}"
+            },
+            "url": "{{baseUrl}}/users/user/{{userId}}",
+            "description": "Self or ADMIN. Optional: name, email, password / passwordHash."
+          },
+          "response": []
+        },
+        {
+          "name": "Assign ADMIN role",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "url": "{{baseUrl}}/users/user/{{userId}}/role/{{roleAdmin}}",
+            "description": "ADMIN only. Use after Login as superadmin + Register user."
+          },
+          "response": []
+        },
+        {
+          "name": "Assign SUBSCRIBER role",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "url": "{{baseUrl}}/users/user/{{userId}}/role/{{roleSubscriber}}",
+            "description": "ADMIN only."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete user",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "url": "{{baseUrl}}/users/user/{{userId}}",
+            "description": "ADMIN only."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "List all roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "X-Session-Id", "value": "{{sessionId}}" }
+            ],
+            "url": "{{baseUrl}}/roles",
+            "description": "Any authenticated user."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
