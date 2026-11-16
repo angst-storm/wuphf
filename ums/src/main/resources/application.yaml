@@ -10,6 +10,12 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
 logging:
   level:
     com.kiprin.ums: INFO

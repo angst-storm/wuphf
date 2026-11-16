@@ -70,10 +70,19 @@ public class SessionAuthFilter implements WebFilter {
             return true;
         }
         String path = request.getPath().pathWithinApplication().value();
+        if (isSwagger(path)) {
+            return true;
+        }
         if (request.getMethod() == HttpMethod.POST && "/sessions/login".equals(path)) {
             return true;
         }
         return request.getMethod() == HttpMethod.POST && "/users/user".equals(path);
+    }
+
+    private static boolean isSwagger(String path) {
+        return path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/webjars/");
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange, String message) {
