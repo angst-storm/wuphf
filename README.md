@@ -8,12 +8,13 @@
 wuphf/
 ├── ums/                         # User Management Service
 │   └── src/main/java/com/kiprin/ums/
-│       ├── config/              # CORS, session auth filter, JDBC callbacks
+│       ├── config/              # CORS, JDBC callbacks
 │       ├── controllers/         # HTTP API
 │       ├── domain/
 │       ├── dto/
 │       ├── repository/          # Spring Data JDBC
 │       ├── service/             # бизнес-логика и авторизация
+│       ├── exception/
 │       └── web/
 ├── db/init/                     # SQL init для Postgres
 ├── docker-compose.yml           # Postgres :5432

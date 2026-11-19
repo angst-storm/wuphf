@@ -13,6 +13,8 @@ import com.kiprin.ums.domain.User;
 import com.kiprin.ums.dto.LoginRequest;
 import com.kiprin.ums.repository.SessionRepository;
 import com.kiprin.ums.repository.UserRepository;
+import com.kiprin.ums.exception.NotFoundException;
+import com.kiprin.ums.exception.UnauthorizedException;
 
 @Service
 public class SessionService {
@@ -34,12 +36,6 @@ public class SessionService {
 
     @Transactional
     public Session open(LoginRequest login) {
-        if (login == null
-                || login.getEmail() == null || login.getEmail().isBlank()
-                || login.getPassword() == null || login.getPassword().isBlank()) {
-            throw new BadRequestException("email and password are required");
-        }
-
         User user = userRepository.findByEmail(login.getEmail().trim())
                 .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
 

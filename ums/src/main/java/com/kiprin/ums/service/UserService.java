@@ -25,6 +25,9 @@ import com.kiprin.ums.dto.PatchUserRequest;
 import com.kiprin.ums.repository.RoleRepository;
 import com.kiprin.ums.repository.SessionRepository;
 import com.kiprin.ums.repository.UserRepository;
+import com.kiprin.ums.exception.BadRequestException;
+import com.kiprin.ums.exception.ForbiddenException;
+import com.kiprin.ums.exception.NotFoundException;
 
 @Service
 public class UserService {
@@ -65,7 +68,6 @@ public class UserService {
 
     @Transactional
     public User create(User request) {
-        requireCreateFields(request);
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -80,7 +82,6 @@ public class UserService {
     @Transactional
     public User update(UUID actorId, UUID userId, User request) {
         authorizationService.requireAdminOrSelf(actorId, userId);
-        requireCreateFields(request);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         user.setName(request.getName());
@@ -212,15 +213,6 @@ public class UserService {
                 throw new ForbiddenException("Cannot self-assign ADMIN role");
             }
         });
-    }
-
-    private static void requireCreateFields(User user) {
-        if (user == null
-                || user.getName() == null
-                || user.getEmail() == null
-                || user.getPasswordHash() == null) {
-            throw new BadRequestException("name, email and passwordHash are required");
-        }
     }
 
     private static String encodePassword(String passwordOrHash) {

@@ -18,6 +18,8 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -29,10 +31,14 @@ public class User implements Persistable<UUID> {
     @Id
     private UUID id;
 
+    @NotBlank
     private String name;
 
+    @NotBlank
+    @Email
     private String email;
 
+    @NotBlank
     @Column("password_hash")
     @JsonAlias("password")
     @JsonProperty(value = "passwordHash", access = JsonProperty.Access.WRITE_ONLY)

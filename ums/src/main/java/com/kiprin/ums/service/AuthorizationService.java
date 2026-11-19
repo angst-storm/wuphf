@@ -10,6 +10,8 @@ import com.kiprin.ums.domain.User;
 import com.kiprin.ums.domain.UserRole;
 import com.kiprin.ums.repository.RoleRepository;
 import com.kiprin.ums.repository.UserRepository;
+import com.kiprin.ums.exception.ForbiddenException;
+import com.kiprin.ums.exception.UnauthorizedException;
 
 @Service
 public class AuthorizationService {

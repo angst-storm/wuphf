@@ -1,8 +1,0 @@
-package com.kiprin.ums.service;
-
-public class UnauthorizedException extends RuntimeException {
-
-    public UnauthorizedException(String message) {
-        super(message);
-    }
-}

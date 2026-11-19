@@ -1,15 +1,15 @@
 package com.kiprin.ums.controllers;
 
-import java.util.Map;
+import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kiprin.ums.domain.Role;
 import com.kiprin.ums.service.RoleService;
 import com.kiprin.ums.web.ApiResponse;
-
-import reactor.core.publisher.Mono;
 
 @RestController
 public class RolesController {
@@ -21,7 +21,7 @@ public class RolesController {
     }
 
     @GetMapping("/roles")
-    public Mono<ResponseEntity<Map<String, Object>>> getAllRoles() {
-        return ApiResponse.okAsync(() -> ApiResponse.of(200, "OK", roleService.findAll()));
+    public ResponseEntity<ApiResponse<List<Role>>> getAllRoles() {
+        return ApiResponse.of(HttpStatus.OK, "OK", roleService.findAll()).toEntity();
     }
 }
