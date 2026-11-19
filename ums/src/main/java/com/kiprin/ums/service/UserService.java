@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import com.kiprin.ums.repository.RoleRepository;
 import com.kiprin.ums.repository.SessionRepository;
 import com.kiprin.ums.repository.UserRepository;
 import com.kiprin.ums.exception.BadRequestException;
+import com.kiprin.ums.exception.DbCreateException;
 import com.kiprin.ums.exception.ForbiddenException;
 import com.kiprin.ums.exception.NotFoundException;
 
@@ -76,7 +78,11 @@ public class UserService {
         forbidAdminRoleIds(roleIds);
         user.replaceRoleIds(roleIds);
         prepareForCreate(user);
-        return enrich(userRepository.save(user), true);
+        try {
+            return enrich(userRepository.save(user), true);
+        } catch (DbActionExecutionException e) {
+            throw new DbCreateException(e);
+        }
     }
 
     @Transactional

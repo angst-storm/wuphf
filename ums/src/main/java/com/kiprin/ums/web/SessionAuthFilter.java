@@ -88,10 +88,10 @@ public class SessionAuthFilter extends OncePerRequestFilter {
     }
 
     private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(
                 response.getOutputStream(),
-                ApiResponse.of(HttpStatus.UNAUTHORIZED, message, null));
+                ApiResponse.of(401, message, null));
     }
 }

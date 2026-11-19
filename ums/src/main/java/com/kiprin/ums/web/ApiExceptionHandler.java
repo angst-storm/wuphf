@@ -7,28 +7,24 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.kiprin.ums.exception.BadRequestException;
-import com.kiprin.ums.exception.ForbiddenException;
-import com.kiprin.ums.exception.NotFoundException;
-import com.kiprin.ums.exception.UnauthorizedException;
+import com.kiprin.ums.exception.BasicException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-    @ExceptionHandler({
-        NotFoundException.class,
-        BadRequestException.class,
-        UnauthorizedException.class,
-        ForbiddenException.class
-    })
-    public ResponseEntity<ApiResponse<Void>> handleDomainException(RuntimeException ex) {
-        HttpStatus status = resolveStatus(ex);
-        return ResponseEntity.status(status)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
+        return handleBasicException(new BasicException(ex));
+    }
+
+    @ExceptionHandler(BasicException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBasicException(BasicException ex) {
+        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+        return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(ApiResponse.of(status, ex.getMessage(), null));
+                .body(ApiResponse.of(ex.code, message, null));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,16 +35,8 @@ public class ApiExceptionHandler {
         if (message.isBlank()) {
             message = "Validation failed";
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(ApiResponse.of(HttpStatus.BAD_REQUEST, message, null));
-    }
-
-    private static HttpStatus resolveStatus(RuntimeException ex) {
-        ResponseStatus annotation = ex.getClass().getAnnotation(ResponseStatus.class);
-        if (annotation != null) {
-            return annotation.value();
-        }
-        return HttpStatus.INTERNAL_SERVER_ERROR;
+                .body(ApiResponse.of(400, message, null));
     }
 }
