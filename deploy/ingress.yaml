@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ums
+  labels:
+    app: wuphf
+    service: ums
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /ums
+        backend:
+          service:
+            name: ums
+            port:
+              number: 80

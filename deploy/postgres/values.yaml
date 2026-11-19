@@ -1,0 +1,11 @@
+auth:
+  enablePostgresUser: true
+  postgresPassword: postgres
+  database: postgres
+
+primary:
+  service:
+    ports:
+      postgresql: 5432
+  initdb:
+    scriptsConfigMap: postgres-init

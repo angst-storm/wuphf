@@ -1,0 +1,11 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+secretGenerator:
+  - name: ums-config
+    literals:
+      - SPRING_WEBFLUX_BASE_PATH=/ums
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-postgresql.postgres.svc.cluster.local:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
