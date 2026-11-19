@@ -84,7 +84,7 @@ public class SessionAuthFilter extends OncePerRequestFilter {
         if (HttpMethod.POST.matches(request.getMethod()) && "/sessions/login".equals(path)) {
             return true;
         }
-        return HttpMethod.POST.matches(request.getMethod()) && "/users/user".equals(path);
+        return HttpMethod.POST.matches(request.getMethod()) && "/users".equals(path);
     }
 
     private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {

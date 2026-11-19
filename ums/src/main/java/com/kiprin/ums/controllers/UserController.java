@@ -49,7 +49,7 @@ public class UserController {
         return ApiResponse.of(HttpStatus.OK, "OK", user).toEntity();
     }
 
-    @PostMapping("/user")
+    @PostMapping
     public ResponseEntity<ApiResponse<User>> createUser(@Valid @RequestBody User user) {
         return ApiResponse.of(HttpStatus.CREATED, "Created", userService.create(user)).toEntity();
     }
