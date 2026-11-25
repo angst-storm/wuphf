@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kiprin.common.auth.RoleName;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

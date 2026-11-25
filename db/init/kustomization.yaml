@@ -2,6 +2,8 @@ namespace: postgres
 configMapGenerator:
   - name: postgres-init
     files:
-      - 00_ums.sql
+      - 00_databases.sql
+      - 01_ums.sql
+      - 02_messages.sql
     options:
       disableNameSuffixHash: true

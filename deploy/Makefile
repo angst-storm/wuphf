@@ -1,7 +1,8 @@
-IMAGE ?= wuphf-ums:latest
+UMS_IMAGE ?= wuphf-ums:latest
+MESSAGES_IMAGE ?= wuphf-messages:latest
 CLUSTER ?= wuphf
 
-.PHONY: kind-c;uster delete-kind-cluster image postgres-db ums
+.PHONY: kind-cluster delete-kind-cluster images image-ums image-messages postgres-db deploy
 
 kind-cluster:
 	kind create cluster --name $(CLUSTER) --config kind-config.yaml
@@ -12,7 +13,7 @@ kind-cluster:
 		--timeout=90s
 
 delete-kind-cluster:
-	kind delete cluster -n wuphf
+	kind delete cluster -n $(CLUSTER)
 
 postgres-db:
 	kubectl create namespace postgres
@@ -20,9 +21,15 @@ postgres-db:
 	helm install postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
 		--namespace postgres --values postgres/values.yaml
 
-image:
-	docker build -f docker/Dockerfile -t $(IMAGE) ..
-	kind load docker-image $(IMAGE) --name $(CLUSTER)
+image-ums:
+	docker build -f docker/Dockerfile --build-arg MODULE=ums -t $(UMS_IMAGE) ..
+	kind load docker-image $(UMS_IMAGE) --name $(CLUSTER)
 
-ums:
+image-messages:
+	docker build -f docker/Dockerfile --build-arg MODULE=messages -t $(MESSAGES_IMAGE) ..
+	kind load docker-image $(MESSAGES_IMAGE) --name $(CLUSTER)
+
+images: image-ums image-messages
+
+deploy:
 	kubectl apply -k .

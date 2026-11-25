@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,15 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kiprin.ums.web.SessionAuthFilter;
+import com.kiprin.common.auth.AuthPrincipal;
+import com.kiprin.common.exception.NotFoundException;
+import com.kiprin.common.web.ApiResponse;
 import com.kiprin.ums.domain.User;
 import com.kiprin.ums.dto.PatchUserRequest;
 import com.kiprin.ums.dto.UserIdResponse;
-import com.kiprin.ums.exception.NotFoundException;
 import com.kiprin.ums.service.UserService;
-import com.kiprin.ums.web.ApiResponse;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -37,9 +37,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<User>>> getAllUsers(HttpServletRequest request) {
-        UUID actorId = SessionAuthFilter.getSession(request).getUserId();
-        return ApiResponse.of(HttpStatus.OK, "OK", userService.findAll(actorId)).toEntity();
+    public ResponseEntity<ApiResponse<List<User>>> getAllUsers(@AuthenticationPrincipal AuthPrincipal actor) {
+        return ApiResponse.of(HttpStatus.OK, "OK", userService.findAll(actor.userId())).toEntity();
     }
 
     @GetMapping("/user/{userId}")
@@ -56,40 +55,36 @@ public class UserController {
 
     @PutMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<User>> updateUser(
-            HttpServletRequest request,
+            @AuthenticationPrincipal AuthPrincipal actor,
             @PathVariable UUID userId,
             @Valid @RequestBody User user) {
-        UUID actorId = SessionAuthFilter.getSession(request).getUserId();
-        return ApiResponse.of(HttpStatus.OK, "Updated", userService.update(actorId, userId, user)).toEntity();
+        return ApiResponse.of(HttpStatus.OK, "Updated", userService.update(actor.userId(), userId, user)).toEntity();
     }
 
     @PatchMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<User>> patchUser(
-            HttpServletRequest request,
+            @AuthenticationPrincipal AuthPrincipal actor,
             @PathVariable UUID userId,
             @Valid @RequestBody PatchUserRequest patch) {
-        UUID actorId = SessionAuthFilter.getSession(request).getUserId();
-        return ApiResponse.of(HttpStatus.OK, "Patched", userService.patch(actorId, userId, patch)).toEntity();
+        return ApiResponse.of(HttpStatus.OK, "Patched", userService.patch(actor.userId(), userId, patch)).toEntity();
     }
 
     @PostMapping("/user/{userId}/role/{roleId}")
     public ResponseEntity<ApiResponse<User>> assignRole(
-            HttpServletRequest request,
+            @AuthenticationPrincipal AuthPrincipal actor,
             @PathVariable UUID userId,
             @PathVariable UUID roleId) {
-        UUID actorId = SessionAuthFilter.getSession(request).getUserId();
         return ApiResponse.of(
                 HttpStatus.OK,
                 "Role assigned",
-                userService.assignRole(actorId, userId, roleId)).toEntity();
+                userService.assignRole(actor.userId(), userId, roleId)).toEntity();
     }
 
     @DeleteMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<UserIdResponse>> deleteUser(
-            HttpServletRequest request,
+            @AuthenticationPrincipal AuthPrincipal actor,
             @PathVariable UUID userId) {
-        UUID actorId = SessionAuthFilter.getSession(request).getUserId();
-        userService.delete(actorId, userId);
+        userService.delete(actor.userId(), userId);
         return ApiResponse.of(HttpStatus.OK, "Deleted", new UserIdResponse(userId)).toEntity();
     }
 }

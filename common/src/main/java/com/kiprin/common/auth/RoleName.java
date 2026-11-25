@@ -1,4 +1,4 @@
-package com.kiprin.ums.domain;
+package com.kiprin.common.auth;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

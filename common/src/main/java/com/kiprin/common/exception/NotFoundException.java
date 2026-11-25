@@ -1,4 +1,4 @@
-package com.kiprin.ums.exception;
+package com.kiprin.common.exception;
 
 public class NotFoundException extends BasicException {
 

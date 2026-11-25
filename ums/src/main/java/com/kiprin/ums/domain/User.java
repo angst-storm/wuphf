@@ -17,6 +17,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kiprin.common.auth.RoleName;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -57,9 +58,6 @@ public class User implements Persistable<UUID> {
 
     @Transient
     private List<Role> roles = new ArrayList<>();
-
-    @Transient
-    private Session lastSession;
 
     @Transient
     @JsonIgnore

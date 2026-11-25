@@ -5,10 +5,15 @@ spring:
   application:
     name: ums
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ums}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+
+wuphf:
+  jwt:
+    secret: ${WUPHF_JWT_SECRET:wuphf-dev-jwt-secret-key-change-in-production-32bytes-min}
+    ttl: ${WUPHF_JWT_TTL:PT1H}
 
 springdoc:
   api-docs:

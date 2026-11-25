@@ -1,4 +1,4 @@
-package com.kiprin.ums.web;
+package com.kiprin.common.web;
 
 import java.util.stream.Collectors;
 
@@ -9,7 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.kiprin.ums.exception.BasicException;
+import com.kiprin.common.exception.BasicException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {

@@ -1,0 +1,12 @@
+resources:
+  - deploy.yaml
+  - svc.yaml
+  - ingress.yaml
+secretGenerator:
+  - name: ums-config
+    literals:
+      - SERVER_SERVLET_CONTEXT_PATH=/ums
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-postgresql.postgres.svc.cluster.local:5432/ums
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - WUPHF_JWT_SECRET=wuphf-dev-jwt-secret-key-change-in-production-32bytes-min

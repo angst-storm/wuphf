@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import org.springframework.data.repository.CrudRepository;
 
+import com.kiprin.common.auth.RoleName;
 import com.kiprin.ums.domain.Role;
-import com.kiprin.ums.domain.RoleName;
 
 public interface RoleRepository extends CrudRepository<Role, UUID> {
 

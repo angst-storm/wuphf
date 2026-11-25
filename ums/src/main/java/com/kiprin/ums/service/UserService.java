@@ -18,18 +18,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kiprin.common.auth.RoleName;
+import com.kiprin.common.exception.BadRequestException;
+import com.kiprin.common.exception.DbCreateException;
+import com.kiprin.common.exception.ForbiddenException;
+import com.kiprin.common.exception.NotFoundException;
 import com.kiprin.ums.domain.Role;
-import com.kiprin.ums.domain.RoleName;
 import com.kiprin.ums.domain.User;
 import com.kiprin.ums.domain.UserRole;
 import com.kiprin.ums.dto.PatchUserRequest;
 import com.kiprin.ums.repository.RoleRepository;
-import com.kiprin.ums.repository.SessionRepository;
 import com.kiprin.ums.repository.UserRepository;
-import com.kiprin.ums.exception.BadRequestException;
-import com.kiprin.ums.exception.DbCreateException;
-import com.kiprin.ums.exception.ForbiddenException;
-import com.kiprin.ums.exception.NotFoundException;
 
 @Service
 public class UserService {
@@ -38,29 +37,26 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final SessionRepository sessionRepository;
     private final AuthorizationService authorizationService;
 
     public UserService(
             UserRepository userRepository,
             RoleRepository roleRepository,
-            SessionRepository sessionRepository,
             AuthorizationService authorizationService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.sessionRepository = sessionRepository;
         this.authorizationService = authorizationService;
     }
 
     public List<User> findAll(UUID actorId) {
         authorizationService.requireAdmin(actorId);
         return userRepository.findAllByOrderByCreatedAtAscIdAsc().stream()
-                .map(user -> enrich(user, false))
+                .map(this::enrich)
                 .toList();
     }
 
     public Optional<User> findById(UUID userId) {
-        return userRepository.findById(userId).map(user -> enrich(user, true));
+        return userRepository.findById(userId).map(this::enrich);
     }
 
     public User getById(UUID userId) {
@@ -79,7 +75,7 @@ public class UserService {
         user.replaceRoleIds(roleIds);
         prepareForCreate(user);
         try {
-            return enrich(userRepository.save(user), true);
+            return enrich(userRepository.save(user));
         } catch (DbActionExecutionException e) {
             throw new DbCreateException(e);
         }
@@ -100,7 +96,7 @@ public class UserService {
             user.replaceRoleIds(resolveRoleIds(request.getRoles()));
         }
         touchUpdatedAt(user);
-        return enrich(userRepository.save(user), true);
+        return enrich(userRepository.save(user));
     }
 
     @Transactional
@@ -122,7 +118,7 @@ public class UserService {
             user.setPasswordHash(encodePassword(patch.getPasswordHash()));
         }
         touchUpdatedAt(user);
-        return enrich(userRepository.save(user), true);
+        return enrich(userRepository.save(user));
     }
 
     @Transactional
@@ -144,7 +140,7 @@ public class UserService {
         }
         user.assignRoleId(roleId);
         touchUpdatedAt(user);
-        return enrich(userRepository.save(user), true);
+        return enrich(userRepository.save(user));
     }
 
     private static void prepareForCreate(User user) {
@@ -162,7 +158,7 @@ public class UserService {
         user.setUpdatedAt(LocalDateTime.now());
     }
 
-    private User enrich(User user, boolean withLastSession) {
+    private User enrich(User user) {
         List<Role> roles = new ArrayList<>();
         if (user.getRoleRefs() != null && !user.getRoleRefs().isEmpty()) {
             Set<UUID> ids = user.getRoleRefs().stream()
@@ -178,12 +174,6 @@ public class UserService {
                     .toList();
         }
         user.setRoles(roles);
-        if (withLastSession) {
-            user.setLastSession(
-                    sessionRepository.findFirstByUserIdOrderByLoggedInAtDesc(user.getId()).orElse(null));
-        } else {
-            user.setLastSession(null);
-        }
         return user;
     }
 

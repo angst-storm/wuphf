@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kiprin.common.web.ApiResponse;
 import com.kiprin.ums.domain.Role;
 import com.kiprin.ums.service.RoleService;
-import com.kiprin.ums.web.ApiResponse;
 
 @RestController
 public class RolesController {

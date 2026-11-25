@@ -1,5 +1,5 @@
 .DS_Store
-ums/target/
+**/target/
 *.class
 .idea/
 *.iml
