@@ -8,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "wuphf.jwt")
+@ConfigurationProperties(prefix = "app.jwt")
 public class JwtProperties {
 
     private static final int MIN_SECRET_BYTES = 32;
@@ -36,7 +36,7 @@ public class JwtProperties {
     public SecretKey secretKey() {
         byte[] bytes = secret == null ? new byte[0] : secret.getBytes(StandardCharsets.UTF_8);
         if (bytes.length < MIN_SECRET_BYTES) {
-            throw new IllegalArgumentException("wuphf.jwt.secret must be at least 32 bytes for HS256");
+            throw new IllegalArgumentException("app.jwt.secret must be at least 32 bytes for HS256");
         }
         return new SecretKeySpec(bytes, "HmacSHA256");
     }

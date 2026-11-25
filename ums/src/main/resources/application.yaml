@@ -10,7 +10,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
-wuphf:
+app:
   jwt:
     secret: ${WUPHF_JWT_SECRET:wuphf-dev-jwt-secret-key-change-in-production-32bytes-min}
     ttl: ${WUPHF_JWT_TTL:PT1H}
