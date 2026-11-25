@@ -22,7 +22,7 @@ import com.kiprin.ums.repository.RoleRepository;
 import com.kiprin.ums.repository.UserRepository;
 
 @Service
-public class AuthService {
+public class AuthenticationService {
 
     private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
@@ -30,7 +30,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, RoleRepository roleRepository, JwtService jwtService) {
+    public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository, JwtService jwtService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.jwtService = jwtService;

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kiprin.common.web.ApiResponse;
 import com.kiprin.ums.dto.LoginRequest;
 import com.kiprin.ums.dto.LoginResponse;
-import com.kiprin.ums.service.AuthService;
+import com.kiprin.ums.service.AuthenticationService;
 
 import jakarta.validation.Valid;
 
@@ -18,14 +18,14 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthenticationService authenticationService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    public AuthController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest login) {
-        return ApiResponse.of(HttpStatus.OK, "Logged in", authService.login(login)).toEntity();
+        return ApiResponse.of(HttpStatus.OK, "Logged in", authenticationService.login(login)).toEntity();
     }
 }
