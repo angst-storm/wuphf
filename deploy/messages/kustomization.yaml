@@ -1,0 +1,11 @@
+resources:
+  - wuphf-service
+commonLabels:
+  service: messages
+namePrefix: messages-
+secretGenerator:
+  - name: messages-wuphf-config
+    behavior: merge
+    literals:
+      - SERVER_SERVLET_CONTEXT_PATH=/messages
+      - UMS_BASE_URL=http://ums/ums

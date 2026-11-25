@@ -1,28 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ums
+  name: wuphf
   labels:
     app: wuphf
-    service: ums
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: wuphf
-      service: ums
   template:
     metadata:
       labels:
         app: wuphf
-        service: ums
     spec:
       containers:
         - name: jvm
-          image: wuphf-ums:latest
+          image: <image-name>:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 9000
+            - containerPort: 9001
           envFrom:
             - secretRef:
-                name: ums-config
+                name: wuphf-config

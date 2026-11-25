@@ -1,0 +1,13 @@
+resources:
+  - deploy.yaml
+  - svc.yaml
+  - ingress.yaml
+secretGenerator:
+  - name: messages-config
+    literals:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-postgresql.postgres.svc.cluster.local:5432/messages
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - APP_JWT_SECRET=/EpUIULDC+7iNaMnqB0f5Ci5cWPOv3IsVgwVA6A+Za+olAlQb41gjoS9L1L+GLqO
+
+
